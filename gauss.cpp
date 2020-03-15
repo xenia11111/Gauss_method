@@ -1,229 +1,78 @@
 #include<iostream>;
-#pragma warning(disable : 4996)
 
 using namespace::std;
 
-class Matrix {
+void swap(int firstRow, int secondRow, double** &matrix,const double dim) {
+	for (int j = 0; j < dim + 1; ++j) {
+		double t = matrix[secondRow][j];
+		matrix[secondRow][j] = matrix[firstRow][j];
+		matrix[firstRow][j] = t;
+	}
+}
+void gauss(double** matrix,int matrixDim) {
 
-	int dim;
+	int dim = matrixDim;
+	for (int i = 0; i < dim; i++) {
+		for (int k = i + 1; k < dim; k++) {
+			if (matrix[i][i] == 0) {
+				for (int k = i; k < dim; ++k) {
+					if (matrix[k][i] != 0) {
+						swap(k,i,matrix,dim);
 
-	int swap_counter = 0;
-
-	double** mx;
-
-public:
-
-	Matrix(int n) {
-
-		dim = n;
-
-		mx = new double*[dim];
-
-		for (int i = 0; i < dim; i++) {
-
+					}
+				}
+			}
+			double sub = matrix[k][i] / matrix[i][i];
 			for (int j = 0; j < dim + 1; j++) {
-
-				mx[i] = new double[dim + 1];
-
+				matrix[k][j] -= sub * matrix[i][j];
 			}
-
 		}
-
-
-
 	}
 
-	void generate()
+	double* x = new double[dim];
 
-	{
+	for (int k = dim - 1; k >= 0; k--) {
 
-		{
+		x[k] = matrix[k][dim] / matrix[k][k];
 
-			for (int i = 0; i < dim; i++)
+		for (int c = dim - 1; c > k; c--) {
 
-				for (int j = 0; j < dim + 1; j++)
-
-					mx[i][j] = rand() % 100;
-
-		}
-
-		cout << "\n";
-
-		display();
-
-
-
-	}
-
-	void create() {
-		cout << "Write extended matrix: "<< endl;
-		for (int i = 0; i < dim; i++) {
-
-			for (int j = 0; j < dim + 1; j++) {
-
-				cin >> mx[i][j];
-
-			}
+			x[k] = x[k] - matrix[k][c] * x[c] / matrix[k][k];
 
 		}
 
 	}
+	cout << "Answer: " << endl;
+	cout << "<";
+	for (int i = 0; i < dim; ++i) {
 
-	void swap(int n) {
-
-		
-
-		for (int k = n; k < dim; ++k) {
-
-			if (mx[k][n] != 0) {
-
-				for (int j = 0; j < dim + 1; ++j) {
-
-					double t = mx[n][j];
-
-					mx[n][j] = mx[k][j];
-
-					mx[k][j] = t;
-
-
-
-				}
-
-				
-
-				break;
-
-			}
-
-
-
-		}
-
-
-
-		
-
+		cout << x[i] << " ";
 
 	}
-
-	void gauss() {
-
-		
-
-		for (int i = 0; i < dim; i++) {
-
-			for (int k = i + 1; k < dim; k++) {
-
-				if (mx[i][i] == 0) {
-
-					swap(i);
-
-
-
-					swap_counter++;
-
-				}
-
-
-				double sub = mx[k][i] / mx[i][i];
-				for (int j = 0; j < dim + 1; j++) {
-					
-					mx[k][j] -= sub*mx[i][j];
-					
-
-
-
-				}
-				
-
-
-
-			}
-
-		}
-
-	}
-
-	double determinant() {
-		gauss();
-		double det = 1;
-
-		for (int k = 0; k < dim; ++k) {
-
-			det *= mx[k][k];
-
-		}
-
-		return det;
-
-	}
-
-	void sol() {
-		cout << "Solution: "<<endl;
-		if (determinant() != 0) {
-
-			double* x = new double[dim];
-
-			for (int k = dim - 1; k >= 0; k--) {
-
-				x[k] = mx[k][dim] / mx[k][k];
-
-				for (int c = dim - 1; c > k; c--) {
-
-					x[k] = x[k] - mx[k][c] * x[c] / mx[k][k];
-
-				}
-
-			}
-
-			for (int i = 0; i < dim; ++i) {
-
-				cout << x[i] << " ";
-
-			}
-			cout << endl;
-
-
-		}
-
-		else { cout << determinant(); }
-
-	}
-
-	void display() {
-		
-		cout << '\n';
-
-		for (int i = 0; i < dim; i++) {
-
-			for (int j = 0; j < dim; j++) {
-
-				cout << mx[i][j] << " ";
-
-			}
-
-			cout << endl;
-
-		}
-
-	}
-
-};
-
+	cout << ">";
+	cout << endl;
+}
 int main() {
-	
-	
 
 	int dim;
 	cout << "Size of matrix: "<<endl;
 	cin >> dim;
+	
+	double** matrix = new double*[dim];
 
-	Matrix M(dim);
+	for (int i = 0; i < dim; i++) {
+		matrix[i] = new double[dim + 1];
+	}
 
-	M.create();
-	M.gauss();
-	M.display();
-	M.sol();
+	cout << "Write extended matrix: " << endl;
+
+	for (int i = 0; i < dim; i++) {
+		for (int j = 0; j < dim + 1; j++) {
+			cin >> matrix[i][j]; 
+		}
+	}
+	
+	gauss(matrix, dim);
 	system("pause");
 }
 
